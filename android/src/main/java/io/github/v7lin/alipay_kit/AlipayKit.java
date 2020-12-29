@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,7 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
     private static final String METHOD_ISINSTALLED = "isInstalled";
     private static final String METHOD_PAY = "pay";
     private static final String METHOD_PAY_H5 = "payH5";
+    private static final String METHOD_PAY_URL_CHANGE = "payUrlChange";
     private static final String METHOD_AUTH = "auth";
 
     private static final String METHOD_ONPAYRESP = "onPayResp";
@@ -120,7 +122,9 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
 
             final MethodChannel.Result newResult = result;
             PayTask task = new PayTask(activity);
-            task.payInterceptorWithUrl(orderUrl,true, new H5PayCallback() {
+            final String ex = task.fetchOrderInfoFromH5PayUrl(orderUrl);
+            Log.e("aaaaaaa",orderUrl + "----------->" + ex);
+            task.payInterceptorWithUrl(ex,true, new H5PayCallback() {
 
                 @Override
                 public void onPayResult(H5PayResultModel h5PayResultModel) {
