@@ -124,7 +124,7 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
             PayTask task = new PayTask(activity);
             final String ex = task.fetchOrderInfoFromH5PayUrl(orderUrl);
             Log.e("aaaaaaa",orderUrl + "----------->" + ex);
-            task.payInterceptorWithUrl(ex,true, new H5PayCallback() {
+            task.payInterceptorWithUrl(orderUrl,true, new H5PayCallback() {
 
                 @Override
                 public void onPayResult(H5PayResultModel h5PayResultModel) {
