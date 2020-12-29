@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.alipay.sdk.app.AuthTask;
+import com.alipay.sdk.app.H5PayCallback;
 import com.alipay.sdk.app.PayTask;
+import com.alipay.sdk.util.H5PayResultModel;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
 
     private static final String METHOD_ISINSTALLED = "isInstalled";
     private static final String METHOD_PAY = "pay";
+    private static final String METHOD_PAY_H5 = "payH5";
     private static final String METHOD_AUTH = "auth";
 
     private static final String METHOD_ONPAYRESP = "onPayResp";
@@ -32,7 +35,7 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
     private static final String ARGUMENT_KEY_ORDERINFO = "orderInfo";
     private static final String ARGUMENT_KEY_AUTHINFO = "authInfo";
     private static final String ARGUMENT_KEY_ISSHOWLOADING = "isShowLoading";
-
+    private static final String ARGUMENT_KEY_URL = "orderUrl";
     //
 
     private Context applicationContext;
@@ -110,6 +113,44 @@ public class AlipayKit implements MethodChannel.MethodCallHandler {
                 }
             }.execute();
             result.success(null);
+        } else if( METHOD_PAY_H5.equals(call.method) ){
+            final String orderUrl = call.argument(ARGUMENT_KEY_URL);
+            final WeakReference<Activity> activityRef = new WeakReference<>(activity);
+            final WeakReference<MethodChannel> channelRef = new WeakReference<>(channel);
+
+            final MethodChannel.Result newResult = result;
+            PayTask task = new PayTask(activity);
+            task.payInterceptorWithUrl(orderUrl,true, new H5PayCallback() {
+
+                @Override
+                public void onPayResult(H5PayResultModel h5PayResultModel) {
+                    newResult.success(h5PayResultModel);
+                }
+            });
+//            new AsyncTask<String, String, Map<String, String>>() {
+//                @Override
+//                protected Map<String, String> doInBackground(String... params) {
+//                    Activity activity = activityRef.get();
+//                    if (activity != null && !activity.isFinishing()) {
+//                        PayTask task = new PayTask(activity);
+//                        final String ex = task.fetchOrderInfoFromH5PayUrl(orderUrl);
+//                        return task.h5Pay(task,ex,true);
+//                    }
+//                    return null;
+//                }
+//
+//                @Override
+//                protected void onPostExecute(Map<String, String> result) {
+//                    if (result != null) {
+//                        Activity activity = activityRef.get();
+//                        MethodChannel channel = channelRef.get();
+//                        if (activity != null && !activity.isFinishing() && channel != null) {
+//                            channel.invokeMethod(METHOD_ONPAYRESP, result);
+//                        }
+//                    }
+//                }
+//            }.execute();
+//            result.success(null);
         } else if (METHOD_AUTH.equals(call.method)) {
             final String authInfo = call.argument(ARGUMENT_KEY_AUTHINFO);
             final boolean isShowLoading = call.argument(ARGUMENT_KEY_ISSHOWLOADING);

@@ -16,6 +16,7 @@ class Alipay {
   static const String _METHOD_ISINSTALLED = 'isInstalled';
   static const String _METHOD_PAY = 'pay';
   static const String _METHOD_AUTH = 'auth';
+  static final String _METHOD_PAY_H5 = "payH5";
 
   static const String _METHOD_ONPAYRESP = 'onPayResp';
   static const String _METHOD_ONAUTHRESP = 'onAuthResp';
@@ -23,6 +24,7 @@ class Alipay {
   static const String _ARGUMENT_KEY_ORDERINFO = 'orderInfo';
   static const String _ARGUMENT_KEY_AUTHINFO = 'authInfo';
   static const String _ARGUMENT_KEY_ISSHOWLOADING = 'isShowLoading';
+  static final String ARGUMENT_KEY_URL = "orderUrl";
 
   static const String SIGNTYPE_RSA = 'RSA';
   static const String SIGNTYPE_RSA2 = 'RSA2';
@@ -122,6 +124,11 @@ class Alipay {
         _ARGUMENT_KEY_ISSHOWLOADING: isShowLoading,
       },
     );
+  }
+
+  Future<Map<String,dynamic>> payH5(@required String orderUrl){
+    assert(orderUrl?.isNotEmpty ?? false);
+    return _channel.invokeMethod<Map<String,dynamic>>(_METHOD_PAY_H5,<String, dynamic>{ARGUMENT_KEY_URL : orderUrl} );
   }
 
   /// 登录
